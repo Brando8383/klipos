@@ -25,4 +25,4 @@ Built with Buildroot, designed for x86_64 laptops and desktops repurposed as sta
 - Secondary target: small form factor desktops
 
 ## Built by
-Brando Parks
+Brando8383
