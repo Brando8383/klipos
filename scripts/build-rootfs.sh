@@ -147,6 +147,14 @@ umount $ROOTFS_DIR/dev
 umount $ROOTFS_DIR/proc
 umount $ROOTFS_DIR/sys
 
+# Copy printer.cfg template
+echo ""
+echo ">>> Installing printer.cfg template..."
+mkdir -p $ROOTFS_DIR/home/klipos
+cp $KLIPOS_DIR/board/klipos/overlay/etc/klipper/printer.cfg.template $ROOTFS_DIR/home/klipos/printer.cfg.template
+chown -R 1000:1000 $ROOTFS_DIR/home/klipos
+echo ">>> printer.cfg template installed."
+
 # Stage 5 - pack into ext4 image
 echo ""
 echo ">>> Stage 5: Creating ext4 image..."
