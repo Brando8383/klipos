@@ -1,4 +1,3 @@
-/usr/bin/make -j1  O=/home/brando/klipper-distro/buildroot-2024.02/output HOSTCC="/usr/bin/gcc" HOSTCXX="/usr/bin/g++" syncconfig
 [7m>>>   Finalizing host directory[27m
 [7m>>>   Finalizing target directory[27m
 mkdir -p /home/brando/klipper-distro/buildroot-2024.02/output/host/etc/meson
@@ -179,7 +178,7 @@ mke2fs 1.47.0 (5-Feb-2023)
 Creating regular file /home/brando/klipper-distro/buildroot-2024.02/output/images/rootfs.ext2
 64-bit filesystem support is not enabled.  The larger fields afforded by this feature enable full-strength checksumming.  Pass -O 64bit to rectify.
 Creating filesystem with 131072 4k blocks and 32768 inodes
-Filesystem UUID: d71e6985-82aa-4c29-ac25-07d8e7869285
+Filesystem UUID: 2133c39a-6c31-451f-8340-147d0edd6893
 Superblock backups stored on blocks: 
 	32768, 98304
 
