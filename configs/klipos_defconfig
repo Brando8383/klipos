@@ -446,7 +446,7 @@ BR2_ROOTFS_OVERLAY="/home/brando/klipper-distro/klipos/board/klipos/overlay"
 BR2_ROOTFS_PRE_BUILD_SCRIPT=""
 BR2_ROOTFS_POST_BUILD_SCRIPT="/home/brando/klipper-distro/klipos/board/klipos/post-build.sh"
 BR2_ROOTFS_POST_FAKEROOT_SCRIPT=""
-BR2_ROOTFS_POST_IMAGE_SCRIPT=""
+BR2_ROOTFS_POST_IMAGE_SCRIPT="/home/brando/klipper-distro/klipos/board/klipos/post-image.sh"
 BR2_ROOTFS_POST_SCRIPT_ARGS=""
 
 #
