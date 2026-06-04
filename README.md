@@ -2,7 +2,7 @@
 
 A minimal, purpose-built Linux distribution for dedicated Klipper 3D printer control stations.
 
-Built with Buildroot, designed for x86_64 laptops and desktops repurposed as standalone Klipper hosts.
+Built on Debian 12 (Bookworm) with a custom Buildroot kernel, designed for x86_64 laptops and desktops repurposed as standalone Klipper hosts.
 
 ## Goals
 - Fast boot (target: under 10 seconds)
@@ -13,19 +13,20 @@ Built with Buildroot, designed for x86_64 laptops and desktops repurposed as sta
 - Easy to flash and configure
 
 ## Status
-- [x] Base system configuration
+- [x] Debian 12 base rootfs
+- [x] Custom Buildroot kernel (Linux 6.6)
+- [x] GRUB2 bootloader (BIOS + UEFI)
 - [x] X.org with Intel/VESA/fbdev drivers
 - [x] libinput trackpad and mouse support
 - [x] Openbox window manager
+- [x] Chromium kiosk browser
 - [x] nginx web server
 - [x] openssh
 - [x] Python3
-- [x] systemd init
-- [x] GRUB2 bootloader (BIOS + UEFI)
+- [x] NetworkManager + WiFi support
 - [x] First boot KIAUH installer (Klipper + Moonraker + Fluidd)
 - [x] Auto-login X session with Fluidd kiosk
 - [x] Flashable disk image (klipos.img)
-- [ ] Chromium kiosk browser in image
 - [ ] First boot WiFi setup wizard
 - [ ] Default printer.cfg
 - [ ] Release v0.1
@@ -45,7 +46,7 @@ Replace `/dev/sdX` with your USB drive.
 ```bash
 git clone https://github.com/Brando8383/klipos.git
 cd klipos
-# Follow build instructions in docs/
+bash scripts/build-rootfs.sh
 ```
 
 ## Built by
