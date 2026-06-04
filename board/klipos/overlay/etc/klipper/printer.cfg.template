@@ -1,0 +1,128 @@
+# KlipOS Default Printer Configuration
+# Copy this file to ~/printer_data/config/printer.cfg and customize for your printer
+# Documentation: https://www.klipper3d.org/Config_Reference.html
+
+# =============================================
+# SERIAL CONNECTION
+# =============================================
+# Find your printer's serial port by running:
+# ls /dev/serial/by-id/
+# Replace the serial below with your printer's path
+
+[mcu]
+serial: /dev/serial/by-id/usb-CHANGE_ME
+
+# =============================================
+# PRINTER KINEMATICS
+# =============================================
+
+[printer]
+kinematics: cartesian
+max_velocity: 300
+max_accel: 3000
+max_z_velocity: 5
+max_z_accel: 100
+
+# =============================================
+# STEPPER MOTORS
+# =============================================
+
+[stepper_x]
+step_pin: CHANGE_ME
+dir_pin: CHANGE_ME
+enable_pin: !CHANGE_ME
+microsteps: 16
+rotation_distance: 40
+endstop_pin: ^CHANGE_ME
+position_endstop: 0
+position_max: 235
+homing_speed: 50
+
+[stepper_y]
+step_pin: CHANGE_ME
+dir_pin: CHANGE_ME
+enable_pin: !CHANGE_ME
+microsteps: 16
+rotation_distance: 40
+endstop_pin: ^CHANGE_ME
+position_endstop: 0
+position_max: 235
+homing_speed: 50
+
+[stepper_z]
+step_pin: CHANGE_ME
+dir_pin: CHANGE_ME
+enable_pin: !CHANGE_ME
+microsteps: 16
+rotation_distance: 8
+endstop_pin: ^CHANGE_ME
+position_endstop: 0
+position_max: 250
+
+# =============================================
+# EXTRUDER
+# =============================================
+
+[extruder]
+step_pin: CHANGE_ME
+dir_pin: CHANGE_ME
+enable_pin: !CHANGE_ME
+microsteps: 16
+rotation_distance: 33.500
+nozzle_diameter: 0.400
+filament_diameter: 1.750
+heater_pin: CHANGE_ME
+sensor_type: EPCOS 100K B57560G104F
+sensor_pin: CHANGE_ME
+control: pid
+pid_Kp: 21.527
+pid_Ki: 1.063
+pid_Kd: 108.982
+min_temp: 0
+max_temp: 250
+
+# =============================================
+# HEATED BED
+# =============================================
+
+[heater_bed]
+heater_pin: CHANGE_ME
+sensor_type: ATC Semitec 104GT-2
+sensor_pin: CHANGE_ME
+control: pid
+pid_Kp: 54.027
+pid_Ki: 0.770
+pid_Kd: 948.182
+min_temp: 0
+max_temp: 130
+
+# =============================================
+# FAN
+# =============================================
+
+[fan]
+pin: CHANGE_ME
+
+# =============================================
+# BLTOUCH / CR TOUCH (uncomment if applicable)
+# =============================================
+
+#[bltouch]
+#sensor_pin: ^CHANGE_ME
+#control_pin: CHANGE_ME
+#x_offset: -45
+#y_offset: -10
+#z_offset: 2.0
+
+#[safe_z_home]
+#home_xy_position: 117,117
+#speed: 50
+#z_hop: 10
+#z_hop_speed: 5
+
+#[bed_mesh]
+#speed: 120
+#horizontal_move_z: 5
+#mesh_min: 10,10
+#mesh_max: 190,190
+#probe_count: 5,5
