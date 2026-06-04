@@ -1,24 +1,166 @@
 #!/bin/bash
-# KlipOS Debian rootfs builder
-# Builds a minimal Debian 12 base for KlipOS
+# KlipOS Rootfs Builder
+# Builds a complete Debian 12 rootfs for KlipOS
+# Run as root or with sudo
+
+set -e
 
 ROOTFS_DIR="/home/brando/klipper-distro/klipos-rootfs"
+ROOTFS_IMG="/home/brando/klipper-distro/klipos-rootfs.ext4"
 DEBIAN_MIRROR="http://deb.debian.org/debian"
 DEBIAN_RELEASE="bookworm"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OVERLAY_DIR="$(dirname $SCRIPT_DIR)/board/klipos/overlay"
 
 echo "========================================="
-echo "KlipOS Debian Rootfs Builder"
+echo "KlipOS Rootfs Builder"
 echo "========================================="
 
-# Create rootfs directory
+# Must run as root
+if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root or with sudo"
+    exit 1
+fi
+
+# Clean previous rootfs if exists
+if [ -d "$ROOTFS_DIR" ]; then
+    echo "Removing previous rootfs..."
+    rm -rf $ROOTFS_DIR
+fi
 mkdir -p $ROOTFS_DIR
 
-# Stage 1 - bootstrap minimal Debian
-echo "Stage 1: Bootstrapping Debian $DEBIAN_RELEASE..."
-sudo debootstrap --arch=amd64 \
+# Stage 1 - debootstrap
+echo ""
+echo ">>> Stage 1: Bootstrapping Debian $DEBIAN_RELEASE..."
+debootstrap --arch=amd64 \
     --variant=minbase \
     $DEBIAN_RELEASE \
     $ROOTFS_DIR \
     $DEBIAN_MIRROR
+echo ">>> Stage 1 complete."
 
-echo "Stage 1 complete."
+# Mount virtual filesystems
+echo ""
+echo ">>> Mounting virtual filesystems..."
+mount --bind /proc $ROOTFS_DIR/proc
+mount --bind /sys $ROOTFS_DIR/sys
+mount --bind /dev $ROOTFS_DIR/dev
+mount --bind /dev/pts $ROOTFS_DIR/dev/pts
+
+# Setup apt sources
+echo ""
+echo ">>> Configuring apt sources..."
+cat > $ROOTFS_DIR/etc/apt/sources.list << SOURCES
+deb http://deb.debian.org/debian bookworm main contrib non-free non-free-firmware
+deb http://deb.debian.org/debian-security bookworm-security main contrib non-free non-free-firmware
+SOURCES
+
+# Stage 2 - install packages
+echo ""
+echo ">>> Stage 2: Installing packages..."
+chroot $ROOTFS_DIR /bin/bash << CHROOT
+export DEBIAN_FRONTEND=noninteractive
+apt update
+apt install -y \
+    systemd \
+    systemd-sysv \
+    sudo \
+    git \
+    curl \
+    wget \
+    openssh-server \
+    nginx \
+    python3 \
+    python3-pip \
+    xorg \
+    xinit \
+    openbox \
+    xterm \
+    chromium \
+    unclutter \
+    network-manager \
+    wpasupplicant \
+    libinput-tools \
+    xinput \
+    fonts-dejavu \
+    locales \
+    tzdata \
+    udev \
+    grub-pc \
+    grub2-common
+CHROOT
+echo ">>> Stage 2 complete."
+
+# Stage 3 - system configuration
+echo ""
+echo ">>> Stage 3: Configuring system..."
+chroot $ROOTFS_DIR /bin/bash << CHROOT
+# Hostname
+echo "klipos" > /etc/hostname
+
+# Locale
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen
+
+# Timezone
+ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
+
+# Users
+useradd -m -s /bin/bash klipos
+usermod -aG sudo,tty,dialout,video,audio,input klipos
+echo "klipos:klipos" | chpasswd
+echo "root:klipos" | chpasswd
+
+# Sudoers
+echo "klipos ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+CHROOT
+echo ">>> Stage 3 complete."
+
+# Stage 4 - install KlipOS scripts and services
+echo ""
+echo ">>> Stage 4: Installing KlipOS scripts and services..."
+
+# Copy overlay files
+cp -a $OVERLAY_DIR/. $ROOTFS_DIR/
+
+# Copy scripts
+cp $SCRIPT_DIR/firstboot/klipos-setup.sh $ROOTFS_DIR/usr/local/bin/
+cp $SCRIPT_DIR/firstboot/klipos-session.sh $ROOTFS_DIR/usr/local/bin/ 2>/dev/null || true
+chmod +x $ROOTFS_DIR/usr/local/bin/klipos-setup.sh
+chmod +x $ROOTFS_DIR/usr/local/bin/klipos-session.sh 2>/dev/null || true
+
+# Enable services
+chroot $ROOTFS_DIR /bin/bash << CHROOT
+systemctl enable klipos-setup.service
+systemctl enable klipos-display.service
+systemctl enable NetworkManager
+systemctl enable ssh
+systemctl enable nginx
+CHROOT
+echo ">>> Stage 4 complete."
+
+# Unmount virtual filesystems
+echo ""
+echo ">>> Unmounting virtual filesystems..."
+umount $ROOTFS_DIR/dev/pts
+umount $ROOTFS_DIR/dev
+umount $ROOTFS_DIR/proc
+umount $ROOTFS_DIR/sys
+
+# Stage 5 - pack into ext4 image
+echo ""
+echo ">>> Stage 5: Creating ext4 image..."
+rm -f $ROOTFS_IMG
+dd if=/dev/zero of=$ROOTFS_IMG bs=1M count=2560
+mkfs.ext4 $ROOTFS_IMG
+mkdir -p /mnt/klipos-rootfs
+mount $ROOTFS_IMG /mnt/klipos-rootfs
+cp -a $ROOTFS_DIR/. /mnt/klipos-rootfs/
+umount /mnt/klipos-rootfs
+echo ">>> Stage 5 complete."
+
+echo ""
+echo "========================================="
+echo "KlipOS rootfs build complete!"
+echo "Image: $ROOTFS_IMG"
+echo "========================================="
