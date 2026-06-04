@@ -1,5 +1,5 @@
 #!/bin/bash
-# KlipOS First Boot Setup Script
+# KlipOS First Boot Setup
 # Runs once on first boot to install Klipper stack via KIAUH
 
 LOGFILE="/var/log/klipos-setup.log"
@@ -18,6 +18,10 @@ if [ -f "$SETUP_DONE" ]; then
     exit 0
 fi
 
+# Run WiFi setup wizard first
+echo "Starting WiFi setup..." | tee -a $LOGFILE
+bash /usr/local/bin/klipos-wifi-setup.sh
+
 # Wait for network
 echo "Waiting for network..." | tee -a $LOGFILE
 for i in $(seq 1 30); do
@@ -25,26 +29,25 @@ for i in $(seq 1 30); do
         echo "Network is up." | tee -a $LOGFILE
         break
     fi
+    if [ $i -eq 30 ]; then
+        echo "Network not available. KIAUH install skipped." | tee -a $LOGFILE
+        echo "Reboot to try again."
+        exit 1
+    fi
     sleep 2
 done
 
-# Create klipos user
-echo "Creating klipos user..." | tee -a $LOGFILE
-useradd -m -s /bin/bash klipos
-usermod -aG tty,dialout,sudo klipos
-echo "klipos:klipos" | chpasswd
-
-# Clone KIAUH
+# Clone and run KIAUH
 echo "Cloning KIAUH..." | tee -a $LOGFILE
+cd /home/klipos
 git clone $KIAUH_REPO $KIAUH_DIR
 chown -R klipos:klipos $KIAUH_DIR
+cd $KIAUH_DIR
 
-# Run KIAUH silent install
-echo "Installing Klipper stack..." | tee -a $LOGFILE
+echo "Running KIAUH installer..." | tee -a $LOGFILE
 sudo -u klipos bash $KIAUH_DIR/kiauh.sh
 
 # Mark setup complete
 mkdir -p /etc/klipos
 touch $SETUP_DONE
-
 echo "KlipOS setup complete: $(date)" | tee -a $LOGFILE
