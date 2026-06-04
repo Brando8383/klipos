@@ -12,3 +12,7 @@ ln -sf /etc/systemd/system/klipos-setup.service \
     $TARGET_DIR/etc/systemd/system/multi-user.target.wants/klipos-setup.service
 
 echo "KlipOS post-build complete."
+
+# Enable klipos-display service
+ln -sf /etc/systemd/system/klipos-display.service \
+    $TARGET_DIR/etc/systemd/system/multi-user.target.wants/klipos-display.service
