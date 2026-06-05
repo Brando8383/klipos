@@ -82,12 +82,18 @@ apt install -y \
     wpasupplicant \
     libinput-tools \
     xinput \
+    xserver-xorg-video-all \
+    xserver-xorg-video-nouveau \
+    firmware-linux-free \
+    firmware-linux-nonfree \
     fonts-dejavu \
     locales \
     tzdata \
     udev \
     grub-pc \
-    grub2-common
+    grub2-common \
+    parted \
+    rsync
 CHROOT
 echo ">>> Stage 2 complete."
 
