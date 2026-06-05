@@ -1,0 +1,15 @@
+[Unit]
+Description=KlippOS Drive Installer
+After=multi-user.target
+ConditionPathExists=!/etc/klippos/.installed_to_disk
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/klippos-installer.sh
+StandardInput=tty
+StandardOutput=tty
+TTYPath=/dev/tty1
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

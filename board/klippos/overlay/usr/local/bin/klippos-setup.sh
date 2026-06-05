@@ -18,7 +18,10 @@ if [ -f "$SETUP_DONE" ]; then
     exit 0
 fi
 
-# Run WiFi setup wizard first
+# Run installer first
+bash /usr/local/bin/klippos-installer.sh
+
+# Run WiFi setup wizard
 echo "Starting WiFi setup..." | tee -a $LOGFILE
 bash /usr/local/bin/klippos-wifi-setup.sh
 

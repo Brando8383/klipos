@@ -16,3 +16,7 @@ echo "KlippOS post-build complete."
 # Enable klippos-display service
 ln -sf /etc/systemd/system/klippos-display.service \
     $TARGET_DIR/etc/systemd/system/multi-user.target.wants/klippos-display.service
+
+# Enable klippos-installer service
+ln -sf /etc/systemd/system/klippos-installer.service \
+    $TARGET_DIR/etc/systemd/system/multi-user.target.wants/klippos-installer.service
