@@ -60,6 +60,8 @@ echo ""
 echo ">>> Stage 2: Installing packages..."
 chroot $ROOTFS_DIR /bin/bash << CHROOT
 export DEBIAN_FRONTEND=noninteractive
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
 apt update
 apt install -y \
     systemd \
@@ -107,6 +109,7 @@ echo "klippos" > /etc/hostname
 # Locale
 echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen
+update-locale LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
 
 # Timezone
 ln -sf /usr/share/zoneinfo/America/Chicago /etc/localtime
@@ -157,7 +160,7 @@ umount $ROOTFS_DIR/sys
 echo ""
 echo ">>> Installing printer.cfg template..."
 mkdir -p $ROOTFS_DIR/home/klippos
-cp $KLIPOS_DIR/board/klippos/overlay/etc/klipper/printer.cfg.template $ROOTFS_DIR/home/klippos/printer.cfg.template
+cp $OVERLAY_DIR/etc/klipper/printer.cfg.template $ROOTFS_DIR/home/klippos/printer.cfg.template
 chown -R 1000:1000 $ROOTFS_DIR/home/klippos
 echo ">>> printer.cfg template installed."
 
